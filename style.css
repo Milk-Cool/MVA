@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+Tamma+2&display=swap');
+* {
+	text-align: center;
+	font-family: 'Baloo Tamma 2', cursive;
+}
+h1 {
+	color: white;
+	font-size: 300%;
+}
+button#off {
+	background-color: green;
+	color: white;
+}
+button#on {
+	background-color: red;
+	color: white;
+}
+div#talkpart {
+	background-color: white;
+	border-radius: 10px;
+	width: 300px;
+}
