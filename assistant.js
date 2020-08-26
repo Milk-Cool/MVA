@@ -11,7 +11,8 @@ var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecogniti
 var toggleBtn = null;
 if (typeof SpeechRecognition === "undefined") {
 	startBtn.remove();
-	result.innerHTML = "<b>Browser does not support Speech API. Please download latest chrome.<b>";
+	result.innerHTML = "<b>Browser does not support Speech API. Please <a href=https://www.google.com/chrome>download latest chrome.</a><b>";
+	console.error("Speech API not supported");
 } else {
 	var recognition = new SpeechRecognition();
 	recognition.lang = "en-US";
@@ -33,7 +34,7 @@ if (typeof SpeechRecognition === "undefined") {
 			speaker.lang = "en-US";
 			speechSynthesis.speak(speaker);
 		} else {
-			processing.innerHTML = `listening: ${text}`;
+			processing.innerHTML = `Listening: ${text}`;
 		}
 	}
 	var listening = false;
@@ -53,41 +54,76 @@ if (typeof SpeechRecognition === "undefined") {
 
 }
 function process(rawText) {
-	var text = rawText.replace(/\s/g, "");
+	var text = rawText.replace(/\s/g, "").replace(/\,/g, "").replace(/\./g, "").replace(/\!/g, "").replace(/\?/g, "").replace("-", "");
 	text = text.toLowerCase();
-	var response = null;
+	if(text.slice(0, 14) == "searchingoogle"){
+		window.open(`http://google.com/search?q=${rawText.toLowerCase().replace("search in google", "")}`, "", "width=" + screen.availWidth + ",height=" + screen.availHeight);
+		return `Searching ${rawText.toLowerCase().replace("search in google", "")} in Google.`;
+	}
+	if(text.slice(0, 6) == "search" || text.slice(0, 6) == "google"){
+		window.open(`http://google.com/search?q=${rawText.toLowerCase().replace(text.slice(0, 6), "")}`, "", "width=" + screen.availWidth + ",height=" + screen.availHeight);
+		return `Searching ${rawText.toLowerCase().replace(text.slice(0, 6), "")} in Google.`;
+	}
 	switch(text) {
 		case "hello":
 		case "hi":
-			response = random(["Hi, how are you?", "Hello!!!", "It's nice to see you"]); break;
+			return random(["Hi, how are you?", "Hello!!!", "It's nice to see you"]);
 		case "what'syourname":
 		case "whoareyou":
-			response = "No matter.";  break;
+			return "No matter.";
 		case "howareyou":
 		case "howareyoutoday":
-			response = random(["I'm good. And you?", "I'm nice xD", "I feel good when I see you. So bad i'm blind..."]); break;
+		case "hellohowareyou":
+		case "hellohowareyoutoday":
+		case "hihowareyoutoday":
+		case "hihowareyou":
+			return random(["I'm good. And you?", "I'm nice xD", "I feel good when I see you. So bad i'm blind..."]);
 		case "whattimeisit":
 		case "time":
-			response = new Date(); break;
+			return new Date();
 		case "i'mgood":
 		case "i'mgreat":
 		case "i'mwonderful":
-			response = random(["Nice to hear it. Me too.", "You are good and it's good"]); break;
+			return random(["Nice to hear it. Me too.", "You are good and it's good"]);
+		case "flipacoin":
+		case "coin":
+			return random(["Heads", "Tails"]);
+		case "rolladice":
+		case "dice":
+			return random(["One", "Two", "Three", "Four", "Five", "Six"]);
 		case "i'mbad":
 		case "i'mnotsogood":
 		case "i'mverybad":
-			response = random(["Oh! What happened?!", ":(", "Hopefully you'll be nice later :)"]); break;
+			return random(["Oh! What happened?!", ":(", "Hopefully you'll be nice later :)"]);
+		case "openwhatsapp":
+		case "whatsapp":
+			window.open(`http://web.whatsapp.com/`, "", "width=" + screen.availWidth + ",height=" + screen.availHeight);
+			return "Opened Whatsapp";
+		case "openyoutube":
+		case "youtube":
+			window.open(`http://youtube.com/`, "", "width=" + screen.availWidth + ",height=" + screen.availHeight);
+			return "Opened YouTube";
+		case "openinstagram":
+		case "instagram":
+			window.open(`http://instagram.com/`, "", "width=" + screen.availWidth + ",height=" + screen.availHeight);
+			return "Opened Instagram";
+		case "openfacebook":
+		case "facebook":
+			window.open(`http://facebook.com/`, "", "width=" + screen.availWidth + ",height=" + screen.availHeight);
+			return "Opened Facebook";
+		case "openreddit":
+		case "reddit":
+			window.open(`http://reddit.com/`, "", "width=" + screen.availWidth + ",height=" + screen.availHeight);
+			return "Opened Reddit";
+		
 		case "stop":
 		case "bye":
+		case "byebye":
 		case "goodbye":
-			response = random(["Bye!", "It was nice to see you. Goodbye", "See you later"]);
 			toggleBtn();
+			return random(["Bye!", "It was nice to see you. Goodbye", "See you later"]);
 	}
-	if (!response) {
-		window.open(`http://google.com/search?q=${rawText.replace("search", "")}`, "_blank");
-		return `Searching ${rawText} in Google`;
-	}
-	return response;
+	return random(["I don't understand you", "Try to say something else.", "I'm too stupid to answer this :("]) + " <a href=\"https://www.google.com/search?q=" + rawText.replace(" ", "+") + "\">Search in Web</a>";
 }
 function random(arr){
 	return arr[Math.floor(Math.random() * arr.length)];
